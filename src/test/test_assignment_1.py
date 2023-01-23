@@ -61,6 +61,9 @@ def bisectionMethod(left, right, precision):
     
     return iterations
 
+# Uses the Newton-Raphson method to find the nearest root of the function
+#       defined in "function()" to the approximated value within
+#       a specified precision within a maximum number of iterations
 def newtonRaphson(aprox, precision, maxIts):
     precision = 10 ** precision
     iterations = 1
