@@ -1,3 +1,4 @@
+import numpy as np
 import math
 
 # Converts binary double to decimal double
@@ -9,6 +10,32 @@ def binToDouble(binNum):
     for i in range(12, len(binNum)):
         m += int(binNum[i]) * (1 / 2) ** (i - 11)
     return (-1) ** int(binary[0]) * 2 ** (c - 1023) * (1 + m)
+
+# Gets the number of digits before the decimal of the float passed
+def getWholeDigits(num):
+    digits = 0
+    while (num != 0):
+        num //= 10
+        digits += 1
+    return digits
+
+# Chops the float passed to n digits
+def chop(num, n):
+    digits = getWholeDigits(num)
+    
+    num = num / 10 ** digits
+    num = math.floor(num * 10 ** n)
+    
+    return num * 10 ** (digits - n)
+
+# Round the float passed to n digits (whole or decimal)
+def newRound(num, n):
+    digits = getWholeDigits(num)
+    
+    num = num / 10 ** digits
+    num = round(num, n)
+    
+    return num * 10 ** digits
 
 # Defines the values of a series
 def series(x, n):
@@ -35,42 +62,34 @@ def minTerms(precision, val):
     else:
         return 'This series does not converge'
 
-# Defines a function to find the roots of with bisection and Newton Raphson methods
-def function(x):
-    return x ** 3 + 4 * x * x - 10
-
-# Defines the derivative of the function defined in "function()"
-def fDer(x):
-    return 3 * x * x + 8 * x
-
-# Uses the bisection method to find a zero of the function defined in "function()"
+# Uses the bisection method to find a zero of the NumPy function object passed to it
 #       between left and right with specified precision. Returns iterations needed
-def bisectionMethod(left, right, precision):
+def bisectionMethod(f, left, right, precision):
     precision = 10 ** precision
     iterations = 0
     
-    while(abs(left - right) > precision and iterations < 1000):
+    while(abs(left - right) > precision):
         iterations += 1
         p = (left + right) / 2
         
-        if ((function(left) > 0 and function(p) < 0)\
-         or (function(left) < 0 and function(p) > 0)):
+        if ((f(left) > 0 and f(p) < 0) or (f(left) < 0 and f(p) > 0)):
             right = p
         else:
             left = p
     
     return iterations
 
-# Uses the Newton-Raphson method to find the nearest root of the function
-#       defined in "function()" to the approximated value within
+# Uses the Newton-Raphson method to find the nearest root of the NumPy function
+#       object passed to it of the approximated value, within
 #       a specified precision within a maximum number of iterations
-def newtonRaphson(aprox, precision, maxIts):
+def newtonRaphson(f, aprox, precision, maxIts):
     precision = 10 ** precision
     iterations = 1
+    derivative = f.deriv()
     
     while(iterations <= maxIts):
-        if (fDer(aprox) != 0):
-            aproxNext = aprox - function(aprox) / fDer(aprox)
+        if (f(aprox) != 0):
+            aproxNext = aprox - f(aprox) / derivative(aprox)
         
             if (abs(aprox - aproxNext) < precision):
                 return iterations
@@ -93,31 +112,12 @@ print("%.5f" % num, end="\n\n")
 
 
 # Question 2
-temp = num
-digits = 0
-
-while temp != 0:
-    temp //= 10
-    digits += 1
-chopNum = num / 10 ** digits
-
-# Chop to 3 digits
-chopNum = math.floor(chopNum * 10 ** 3)
-
-# Replace decimal point in decNum to appropriate location
-chopNum = chopNum * 10 ** digits / 10 ** 3
-
-print("%g" % chopNum, end="\n\n")
+print(chop(num, 3), end = '\n\n')
 # End of question 2
 
 
 # Question 3
-roundNum = num / 10 ** digits
-
-roundNum = round(roundNum, 3)
-
-roundNum = roundNum * 10 ** digits
-
+roundNum = newRound(num, 3)
 print("%g" % roundNum, end="\n\n")
 # End of question 3
 
@@ -140,9 +140,10 @@ print(minTerms(-4, 1), end = '\n\n')
 
 
 # Question 6
+func = np.poly1d([1, 4, 0, -10])
 a = -4
 b = 7
-bisect = bisectionMethod(a, b, -4)
+bisect = bisectionMethod(func, a, b, -4)
 print(bisect)
-print(newtonRaphson(b, -4, bisect))
+print(newtonRaphson(func, b, -4, bisect))
 # End of question 6

@@ -4,7 +4,7 @@ This is Assignment 1 for Numerical Calculus (COT 4500)
 
 ## Requirements
 
-The requirements.txt file outlines the necessary modules to run this Python code. This code uses the math module.
+The requirements.txt file outlines the necessary modules to run this Python code. This code uses NumPy.
 
 ## Instructions
 
