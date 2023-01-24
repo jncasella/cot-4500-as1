@@ -33,9 +33,9 @@ def newRound(num, n):
     digits = getWholeDigits(num)
     
     num = num / 10 ** digits
-    num = round(num, n)
+    num += 5 * 10 ** (-n - 1)
     
-    return num * 10 ** digits
+    return chop(num * 10 ** digits, n)
 
 # Defines the values of a series
 def series(x, n):
